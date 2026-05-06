@@ -1,17 +1,9 @@
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-  <app-gifs-list-item/>
-  <app-gifs-list-item/>
-  <app-gifs-list-item/>
-  <app-gifs-list-item/>
-  <app-gifs-list-item/>
-  <app-gifs-list-item/>
-  <app-gifs-list-item/>
-  <app-gifs-list-item/>
-  <app-gifs-list-item/>
-  <app-gifs-list-item/>
-  <app-gifs-list-item/>
-  <app-gifs-list-item/>
-  <app-gifs-list-item/>
+  @for (url of imagenUrls(); track url) {
+
+    <app-gifs-list-item [imagen]="url"></app-gifs-list-item>
+
+  }
 
 </div>
