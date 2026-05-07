@@ -2,7 +2,7 @@
 
 Este es un proyecto de Angular 
 
-## Deve
+## Dev
 
 1. Clonar el proyecto
 2. Instalar las dependencias con "npm install"
