@@ -1,32 +1,43 @@
 
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '@environments/environment';
 import type { GiphyResponse } from '../interfaces/giphy.interface';
+import { Gif } from '../interfaces/gif.interface';
+import { GifMapper } from '../mapper/gif.mapper';
 
 @Injectable({providedIn: 'root'})
 
 export class GifService {
-
   envs = environment
 
   //inyectar dependencia http
+    private http = inject(HttpClient)
 
-  private http = inject(HttpClient)
+  //Señal para almacenar la respuesta del HTTP GET
+    trendingGifs = signal<Gif[]>([])
 
   constructor(){
     this.loadTrendingGifs()
   }
 
   loadTrendingGifs(){
-
     this.http.get<GiphyResponse>(`${this.envs.giphyUrl}/gifs/trending`,{
       params:{
         api_key: this.envs.giphyApiKey,
         limit: 20
       }
-    })
+    }).subscribe((gifRespuesta)=>{
 
+      console.log(gifRespuesta.data)
 
+      //Transformar la respuesta de []"GiphyResponse" en un [] "Gif"
+      const gifs = GifMapper.mapGiphyItemsToGifArray(gifRespuesta.data)
+      console.log({gifs})
+
+      this.trendingGifs.set(gifs)
+    }
+  )
   }
+
 }
