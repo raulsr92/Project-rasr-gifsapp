@@ -17,8 +17,11 @@ export class GifService {
   //Señal para almacenar la respuesta del HTTP GET
     trendingGifs = signal<Gif[]>([])
 
+    trendingGifsLoading = signal(true)
+
   constructor(){
     this.loadTrendingGifs()
+    console.log("Servicio creado")
   }
 
   loadTrendingGifs(){
@@ -36,6 +39,8 @@ export class GifService {
       console.log({gifs})
 
       this.trendingGifs.set(gifs)
+
+      this.trendingGifsLoading.set(false)
     }
   )
   }
