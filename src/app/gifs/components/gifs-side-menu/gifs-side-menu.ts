@@ -7,4 +7,7 @@ import { GifsSideMenuOptions } from './gifs-side-menu-options/gifs-side-menu-opt
   imports: [GifsSideMenuHeader,GifsSideMenuOptions],
   templateUrl: './gifs-side-menu.html',
 })
-export class GifsSideMenu { }
+export class GifsSideMenu {
+
+
+ }

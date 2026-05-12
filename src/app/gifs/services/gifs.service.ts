@@ -17,6 +17,8 @@ export class GifService {
   //Señal para almacenar la respuesta del HTTP GET
     trendingGifs = signal<Gif[]>([])
 
+    //searchedGifs = signal<Gif[]>([])
+
     trendingGifsLoading = signal(true)
 
   constructor(){
@@ -24,25 +26,50 @@ export class GifService {
     console.log("Servicio creado")
   }
 
-  loadTrendingGifs(){
-    this.http.get<GiphyResponse>(`${this.envs.giphyUrl}/gifs/trending`,{
-      params:{
-        api_key: this.envs.giphyApiKey,
-        limit: 20
+  // Método 1
+
+    loadTrendingGifs(){
+      this.http.get<GiphyResponse>(`${this.envs.giphyUrl}/gifs/trending`,{
+        params:{
+          api_key: this.envs.giphyApiKey,
+          limit: 20
+        }
+      }).subscribe((gifRespuesta)=>{
+
+        console.log(gifRespuesta.data)
+
+        //Transformar la respuesta de []"GiphyResponse" en un [] "Gif"
+        const gifs = GifMapper.mapGiphyItemsToGifArray(gifRespuesta.data)
+        console.log({gifs})
+
+        this.trendingGifs.set(gifs)
+
+        this.trendingGifsLoading.set(false)
       }
-    }).subscribe((gifRespuesta)=>{
-
-      console.log(gifRespuesta.data)
-
-      //Transformar la respuesta de []"GiphyResponse" en un [] "Gif"
-      const gifs = GifMapper.mapGiphyItemsToGifArray(gifRespuesta.data)
-      console.log({gifs})
-
-      this.trendingGifs.set(gifs)
-
-      this.trendingGifsLoading.set(false)
+    )
     }
-  )
-  }
 
+  // Método 2
+
+    searchGifs(query: string){
+
+      this.http.get<GiphyResponse>(`${this.envs.giphyUrl}/gifs/search`,{
+        params:{
+          q:query,
+          api_key:this.envs.giphyApiKey,
+          limit: 20,
+        }
+      }).subscribe((RespuestaBusqueda)=>{
+
+        console.log(RespuestaBusqueda.data)
+
+        //Transformar la respuesta de []"GiphyResponse" en un [] "Gif"
+
+        const gifs = GifMapper.mapGiphyItemsToGifArray(RespuestaBusqueda.data)
+        console.log({search: gifs})
+
+        //this.searchedGifs.set(gifs)
+      })
+
+    }
 }
