@@ -20,7 +20,7 @@ export default class SearchPage {
 
     //métodos del componente
 
-      onSearch(query:string){
+      onSearch(query:string, event:Event){
         console.log(query)
 
         this.gifService.searchGifs(query).subscribe(
@@ -32,6 +32,8 @@ export default class SearchPage {
 
         })
 
+        const inputElement = event.target as HTMLInputElement
+        inputElement.value = ""
 
       }
 

@@ -1,11 +1,14 @@
 
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+
+import { map, tap } from 'rxjs';
+
 import { environment } from '@environments/environment';
 import type { GiphyResponse } from '../interfaces/giphy.interface';
 import { Gif } from '../interfaces/gif.interface';
 import { GifMapper } from '../mapper/gif.mapper';
-import { map, tap } from 'rxjs';
+
 
 @Injectable({providedIn: 'root'})
 
@@ -21,6 +24,21 @@ export class GifService {
     //searchedGifs = signal<Gif[]>([])
 
     trendingGifsLoading = signal(true)
+
+  // Señal para almacenar caché
+
+    searchHistory = signal<Record<string,Gif[]>>({})
+
+  // Señal computada para almacenar las claves del objeto caché
+
+    searchHistoryKeys = computed(()=>{
+
+      const searchHistory = this.searchHistory()
+
+      return Object.keys(searchHistory)
+
+    })
+
 
   constructor(){
     this.loadTrendingGifs()
@@ -63,7 +81,20 @@ export class GifService {
       }).pipe(
         map( ({data}) => data),
 
-        map( (data)=> GifMapper.mapGiphyItemsToGifArray(data))
+        map( (items)=> GifMapper.mapGiphyItemsToGifArray(items)),
+
+        //Agregar efecto secundario para almacenar historial (Caché)
+
+        tap(items => {
+
+          this.searchHistory.update( itemsPrev => (
+            { ...itemsPrev,
+              [query.toLocaleLowerCase()]:items
+            }))
+          console.log(this.searchHistory())
+          console.log(this.searchHistoryKeys())
+
+        })
       )
 
 

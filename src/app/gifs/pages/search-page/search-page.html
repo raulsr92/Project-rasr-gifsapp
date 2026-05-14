@@ -8,7 +8,7 @@
       type="text"
       placeholder="Buscar gifs"
       class="mt-3 border border-gray-600 rounded-md px-3 py-1 bg-white"
-      (keyup.enter)="onSearch(txtSearch.value)"
+      (keyup.enter)="onSearch(txtSearch.value,$event )"
       #txtSearch
     >
 
