@@ -2,7 +2,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 
-import { map, tap } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 
 import { environment } from '@environments/environment';
 import type { GiphyResponse } from '../interfaces/giphy.interface';
@@ -45,7 +45,7 @@ export class GifService {
     console.log("Servicio creado")
   }
 
-  // Método 1
+  // Método 1: Gifs en tendencia (no hay búsqueda)
 
     loadTrendingGifs(){
       this.http.get<GiphyResponse>(`${this.envs.giphyUrl}/gifs/trending`,{
@@ -68,9 +68,9 @@ export class GifService {
     )
     }
 
-  // Método 2
+  // Método 2: Búsqueda de Gifs
 
-    searchGifs(query: string){
+    searchGifs(query: string):Observable<Gif[]>{
 
       return this.http.get<GiphyResponse>(`${this.envs.giphyUrl}/gifs/search`,{
         params:{
@@ -99,4 +99,13 @@ export class GifService {
 
 
     }
+
+  // Método 3: Obtener gifs de caché
+
+    getHistoryGifs(query:string):Gif[]{
+
+      return this.searchHistory()[query]  ?? [];
+
+    }
+
 }
