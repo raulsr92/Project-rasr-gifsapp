@@ -1,13 +1,15 @@
-
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
-
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
-
 import { environment } from '@environments/environment';
 import type { GiphyResponse } from '../interfaces/giphy.interface';
 import { Gif } from '../interfaces/gif.interface';
 import { GifMapper } from '../mapper/gif.mapper';
+
+const loadFromLocalStorage = ():Record<string,Gif[]> =>{
+  const historialBusqueda = localStorage.getItem('Caché de búsqueda')
+  return historialBusqueda ? JSON.parse(historialBusqueda) : {}
+}
 
 
 @Injectable({providedIn: 'root'})
@@ -27,7 +29,7 @@ export class GifService {
 
   // Señal para almacenar caché
 
-    searchHistory = signal<Record<string,Gif[]>>({})
+    searchHistory = signal<Record<string,Gif[]>>(loadFromLocalStorage())
 
   // Señal computada para almacenar las claves del objeto caché
 
@@ -38,6 +40,16 @@ export class GifService {
       return Object.keys(searchHistory)
 
     })
+
+  //Efecto para almacenar en localStorage
+
+  saveToLocalStorage = effect(()=>{
+      console.log( `Se guardó/actualizó el caché en localstorage `)
+
+      localStorage.setItem('Caché de búsqueda',JSON.stringify(this.searchHistory()))
+
+    }
+  )
 
 
   constructor(){
