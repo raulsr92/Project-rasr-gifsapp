@@ -6,8 +6,11 @@ import type { GiphyResponse } from '../interfaces/giphy.interface';
 import { Gif } from '../interfaces/gif.interface';
 import { GifMapper } from '../mapper/gif.mapper';
 
+const GIF_KEY = 'Caché de búsqueda';
+
 const loadFromLocalStorage = ():Record<string,Gif[]> =>{
-  const historialBusqueda = localStorage.getItem('Caché de búsqueda')
+  const historialBusqueda = localStorage.getItem(GIF_KEY)
+  console.log(historialBusqueda)
   return historialBusqueda ? JSON.parse(historialBusqueda) : {}
 }
 
@@ -46,7 +49,9 @@ export class GifService {
   saveToLocalStorage = effect(()=>{
       console.log( `Se guardó/actualizó el caché en localstorage `)
 
-      localStorage.setItem('Caché de búsqueda',JSON.stringify(this.searchHistory()))
+      const historyString = JSON.stringify(this.searchHistory())
+
+      localStorage.setItem(GIF_KEY, historyString)
 
     }
   )
