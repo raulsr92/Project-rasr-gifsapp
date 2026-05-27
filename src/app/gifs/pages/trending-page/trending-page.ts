@@ -12,7 +12,7 @@ export default class TrendingPage {
     //protected readonly imageUrls = imageUrls
     //Referenciar elemento en html
 
-    scrollSectionRef = viewChild<ElementRef>('sectionScroll')
+    scrollSectionRef = viewChild<ElementRef<HTMLElement>>('sectionScroll')
 
     //Inyectar servicio de petición http GET
       gifService = inject(GifService)
@@ -23,6 +23,23 @@ export default class TrendingPage {
       onScroll(event: Event){
         const scrollSection = this.scrollSectionRef()?.nativeElement
 
-        console.log(scrollSection)
+        if (!scrollSection) return;
+
+        const scrollTop = scrollSection.scrollTop;
+        const clientHeight = scrollSection.clientHeight;
+        const scrollHeight = scrollSection.scrollHeight;
+
+        //console.log({scrollTotal:scrollTop+clientHeight, scrollHeight})
+
+        const isAtBottom = scrollTop + clientHeight + 150 >= (scrollHeight-1)
+
+        console.log({isAtBottom:isAtBottom})
+
+        //Hacer la petición
+        if(isAtBottom){
+
+          //TODO: cargar la siguiente página de Gifs
+
+        }
       }
  }
