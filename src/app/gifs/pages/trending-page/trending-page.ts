@@ -40,6 +40,8 @@ export default class TrendingPage {
 
           //TODO: cargar la siguiente página de Gifs
 
+          this.gifService.loadTrendingGifs()
+
         }
       }
  }

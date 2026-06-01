@@ -28,7 +28,9 @@ export class GifService {
 
     //searchedGifs = signal<Gif[]>([])
 
-    trendingGifsLoading = signal(true)
+    trendingGifsLoading = signal(false)
+
+    private trendingPage = signal<number>(0)
 
   // Señal para almacenar caché
 
@@ -65,23 +67,40 @@ export class GifService {
   // Método 1: Gifs en tendencia (no hay búsqueda)
 
     loadTrendingGifs(){
-      this.http.get<GiphyResponse>(`${this.envs.giphyUrl}/gifs/trending`,{
-        params:{
-          api_key: this.envs.giphyApiKey,
-          limit: 20
+      //Condición para la paginación
+      if (this.trendingGifsLoading()) return
+      this.trendingGifsLoading.set(true)
+
+        this.http.get<GiphyResponse>(`${this.envs.giphyUrl}/gifs/trending`,{
+          params:{
+            api_key: this.envs.giphyApiKey,
+            limit: 20,
+            offset: this.trendingPage()*20
+          }
+        }).subscribe((gifRespuesta)=>{
+
+          //console.log(gifRespuesta.data)
+
+          //Transformar la respuesta de []"GiphyResponse" en un [] "Gif"
+            const gifs = GifMapper.mapGiphyItemsToGifArray(gifRespuesta.data)
+            //console.log({gifs})
+
+          //Concatenar gifs a la señal que los almacena
+
+            this.trendingGifs.update( currentArrayGifs => [...currentArrayGifs, ...gifs])
+
+            console.log(this.trendingGifs())
+
+          // Actualizar la señal que maneja la paginación
+
+            console.log(`Paginación actual ${this.trendingPage()}`)
+
+            this.trendingPage.update(paginacionActual => paginacionActual+1)
+
+          //Cambiar la señal que controla el estado de la petición para permitir nuevamente una nueva
+
+            this.trendingGifsLoading.set(false)
         }
-      }).subscribe((gifRespuesta)=>{
-
-        console.log(gifRespuesta.data)
-
-        //Transformar la respuesta de []"GiphyResponse" en un [] "Gif"
-        const gifs = GifMapper.mapGiphyItemsToGifArray(gifRespuesta.data)
-        console.log({gifs})
-
-        this.trendingGifs.set(gifs)
-
-        this.trendingGifsLoading.set(false)
-      }
     )
     }
 
